@@ -48,7 +48,7 @@ Results:
 Based on 3.1 test, if pods (tasks) block the claim over PVC that means that secuencial execution on parallel pipelines is not granted (we were 'lucky' in previous test).
 This tests executes 10 pipelines in parallel with just 5 seconds difference between them and sharing a PVC.
 
-*Run this test using `shared-pvc.sh` file*
+*Run this test using `shared-pvc-many.sh` file*
 
 Results:
 
