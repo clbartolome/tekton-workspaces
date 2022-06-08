@@ -1,0 +1,71 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: test-pipeline
+spec:
+  params:
+  - name: SOURCE_GIT_URL
+    type: string
+    default: https://github.com/clbartolome/tekton-workspaces.git
+  - name: SOURCE_GIT_REVISION
+    type: string
+    default: master
+  - name: SOURCE_GIT_CLEAN
+    type: string
+    default: "true"
+  workspaces:
+  - name: pipeline-workspace
+  - name: maven-settings
+  tasks:
+# ------------ CLONE REPOSITORY ------------ #
+  - name: git-clone
+    taskRef:
+      kind: ClusterTask
+      name: git-clone
+    params:
+    - name: url
+      value: $(params.SOURCE_GIT_URL)
+    - name: revision
+      value: $(params.SOURCE_GIT_REVISION)
+    - name: deleteExisting
+      value: '$(params.SOURCE_GIT_CLEAN)'
+    workspaces:
+    - name: output
+      workspace: pipeline-workspace
+# ------------ PACKAGE ------------ #
+  - name: package
+    runAfter:
+    - git-clone
+    taskRef:
+      kind: ClusterTask
+      name: maven
+    params:
+    - name: CONTEXT_DIR
+      value: app
+    - name: GOALS
+      value:
+      - package
+      - -DskipTests
+    workspaces:
+    - name: source
+      workspace: pipeline-workspace
+    - name: maven-settings
+      workspace: maven-settings
+# ------------ RUN UNIT TESTS ------------ #
+  - name: unit-tests
+    runAfter:
+    - package
+    taskRef:
+      kind: ClusterTask
+      name: maven
+    params:
+    - name: CONTEXT_DIR
+      value: app
+    - name: GOALS
+      value:
+      - test
+    workspaces:
+    - name: source
+      workspace: pipeline-workspace
+    - name: maven-settings
+      workspace: maven-settings

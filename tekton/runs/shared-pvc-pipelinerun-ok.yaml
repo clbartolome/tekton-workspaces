@@ -1,0 +1,15 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  generateName: shared-pvc-pipelinerun-ok-
+spec:
+  pipelineRef:
+    name: test-pipeline
+  serviceAccountName: pipeline
+  workspaces:
+  - name: pipeline-workspace
+    persistentVolumeClaim:
+      claimName: files-pvc
+  - name: maven-settings
+    emptyDir: {}

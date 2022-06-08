@@ -1,0 +1,24 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  generateName: template-pvc-pipelinerun-failing-
+spec:
+  pipelineRef:
+    name: test-pipeline
+  serviceAccountName: pipeline
+  params:
+  - name: SOURCE_GIT_REVISION
+    value: failing-tests
+  workspaces:
+  - name: pipeline-workspace
+    volumeClaimTemplate:
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
+        volumeMode: Filesystem
+  - name: maven-settings
+    emptyDir: {}

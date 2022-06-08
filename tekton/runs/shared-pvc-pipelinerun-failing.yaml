@@ -1,0 +1,18 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  generateName: shared-pvc-pipelinerun-failing-
+spec:
+  pipelineRef:
+    name: test-pipeline
+  serviceAccountName: pipeline
+  params:
+  - name: SOURCE_GIT_REVISION
+    value: failing-tests
+  workspaces:
+  - name: pipeline-workspace
+    persistentVolumeClaim:
+      claimName: files-pvc
+  - name: maven-settings
+    emptyDir: {}

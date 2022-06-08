@@ -1,0 +1,21 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  generateName: template-pvc-pipelinerun-ok-
+spec:
+  pipelineRef:
+    name: test-pipeline
+  serviceAccountName: pipeline
+  workspaces:
+  - name: pipeline-workspace
+    volumeClaimTemplate:
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
+        volumeMode: Filesystem
+  - name: maven-settings
+    emptyDir: {}
